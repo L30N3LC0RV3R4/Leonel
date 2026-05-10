@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Portfolio</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --bg: #F7F5F0;
+      --ink: #1C1C1A;
+      --ink-soft: #6B6860;
+      --gold: #B8965A;
+      --line: #E0DDD6;
+      --white: #FFFFFF;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--ink);
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 300;
+      min-height: 100vh;
+      cursor: none;
+    }
+
+    /* Custom cursor */
+    .cursor {
+      position: fixed;
+      width: 8px; height: 8px;
+      background: var(--gold);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 9999;
+      transform: translate(-50%, -50%);
+      transition: transform 0.1s ease;
+    }
+    .cursor-ring {
+      position: fixed;
+      width: 32px; height: 32px;
+      border: 1px solid var(--gold);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 9998;
+      transform: translate(-50%, -50%);
+      transition: all 0.18s ease;
+      opacity: 0.6;
+    }
+
+    /* Nav */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 28px 60px;
+      mix-blend-mode: normal;
+      opacity: 0;
+      animation: fadeDown 1s ease 0.3s forwards;
+    }
+    .nav-logo {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 18px;
+      font-weight: 300;
+      letter-spacing: 0.08em;
+      color: var(--ink);
+      text-decoration: none;
+    }
+    .nav-links { display: flex; gap: 40px; list-style: none; }
+    .nav-links a {
+      font-size: 12px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--ink-soft);
+      text-decoration: none;
+      transition: color 0.3s;
+    }
+    .nav-links a:hover { color: var(--gold); }
+
+    /* Hero */
+    .hero {
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero-left {
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      padding: 0 60px 80px;
+      position: relative;
+      z-index: 2;
+    }
+    .hero-eyebrow {
+      font-size: 11px;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 24px;
+      opacity: 0;
+      animation: fadeUp 1s ease 0.6s forwards;
+    }
+    .hero-name {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(64px, 7vw, 110px);
+      font-weight: 300;
+      line-height: 0.92;
+      letter-spacing: -0.02em;
+      color: var(--ink);
+      opacity: 0;
+      animation: fadeUp 1s ease 0.8s forwards;
+    }
+    .hero-name em {
+      font-style: italic;
+      color: var(--gold);
+    }
+    .hero-tagline {
+      margin-top: 32px;
+      font-size: 14px;
+      line-height: 1.8;
+      color: var(--ink-soft);
+      max-width: 340px;
+      opacity: 0;
+      animation: fadeUp 1s ease 1s forwards;
+    }
+    .hero-cta {
+      margin-top: 48px;
+      display: flex; align-items: center; gap: 20px;
+      opacity: 0;
+      animation: fadeUp 1s ease 1.2s forwards;
+    }
+    .btn-primary {
+      display: inline-block;
+      padding: 14px 36px;
+      background: var(--ink);
+      color: var(--white);
+      font-size: 11px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      text-decoration: none;
+      transition: background 0.3s, color 0.3s;
+    }
+    .btn-primary:hover { background: var(--gold); }
+    .btn-text {
+      font-size: 11px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--ink-soft);
+      text-decoration: none;
+      border-bottom: 1px solid var(--line);
+      padding-bottom: 2px;
+      transition: color 0.3s, border-color 0.3s;
+    }
+    .btn-text:hover { color: var(--gold); border-color: var(--gold); }
+
+    .hero-right {
+      position: relative;
+      overflow: hidden;
+    }
+    .hero-image-wrap {
+      position: absolute; inset: 0;
+      opacity: 0;
+      animation: fadeIn 1.4s ease 0.5s forwards;
+    }
+    .hero-image-bg {
+      width: 100%; height: 100%;
+      background: linear-gradient(135deg, #E8E2D8 0%, #D4C9B8 50%, #C4B8A8 100%);
+      position: relative;
+    }
+    .hero-image-bg::after {
+      content: '';
+      position: absolute; inset: 0;
+      background: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.08'/%3E%3C/svg%3E");
+      opacity: 0.4;
+    }
+    /* Decorative elements on hero image */
+    .hero-deco {
+      position: absolute;
+      bottom: 60px; left: -30px;
+      width: 200px;
+      background: var(--white);
+      padding: 28px;
+      z-index: 3;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.08);
+      opacity: 0;
+      animation: fadeUp 1s ease 1.4s forwards;
+    }
+    .hero-deco-num {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 48px;
+      font-weight: 300;
+      color: var(--gold);
+      line-height: 1;
+    }
+    .hero-deco-label {
+      font-size: 10px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--ink-soft);
+      margin-top: 6px;
+    }
+
+    /* Divider line */
+    .divider {
+      width: 100%;
+      height: 1px;
+      background: var(--line);
+    }
+
+    /* About section */
+    .about {
+      padding: 120px 60px;
+      display: grid;
+      grid-template-columns: 1fr 2fr;
+      gap: 80px;
+      align-items: start;
+    }
+    .section-label {
+      font-size: 10px;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--gold);
+      padding-top: 8px;
+    }
+    .about-content {}
+    .about-heading {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(36px, 4vw, 58px);
+      font-weight: 300;
+      line-height: 1.1;
+      color: var(--ink);
+      margin-bottom: 36px;
+    }
+    .about-heading em { font-style: italic; color: var(--gold); }
+    .about-body {
+      font-size: 15px;
+      line-height: 1.9;
+      color: var(--ink-soft);
+      max-width: 560px;
+    }
+    .about-body p + p { margin-top: 20px; }
+
+    .about-stats {
+      margin-top: 60px;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 40px;
+      border-top: 1px solid var(--line);
+      padding-top: 40px;
+    }
+    .stat-num {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 42px;
+      font-weight: 300;
+      color: var(--ink);
+    }
+    .stat-label {
+      font-size: 11px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--ink-soft);
+      margin-top: 4px;
+    }
+
+    /* Marquee */
+    .marquee-section {
+      background: var(--ink);
+      padding: 20px 0;
+      overflow: hidden;
+    }
+    .marquee-track {
+      display: flex;
+      white-space: nowrap;
+      animation: marquee 20s linear infinite;
+    }
+    .marquee-item {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 22px;
+      font-weight: 300;
+      font-style: italic;
+      color: rgba(255,255,255,0.3);
+      padding: 0 40px;
+    }
+    .marquee-item span {
+      color: var(--gold);
+      margin-right: 40px;
+    }
+
+    /* Contact */
+    .contact {
+      padding: 120px 60px;
+      text-align: center;
+    }
+    .contact-eyebrow {
+      font-size: 11px;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 20px;
+    }
+    .contact-heading {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(42px, 5vw, 76px);
+      font-weight: 300;
+      line-height: 1.1;
+      color: var(--ink);
+      margin-bottom: 40px;
+    }
+    .contact-heading em { font-style: italic; }
+    .contact-links {
+      display: flex; justify-content: center; gap: 12px; flex-wrap: wrap;
+    }
+    .contact-link {
+      padding: 12px 28px;
+      border: 1px solid var(--line);
+      font-size: 11px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--ink-soft);
+      text-decoration: none;
+      transition: all 0.3s;
+    }
+    .contact-link:hover {
+      background: var(--ink);
+      color: var(--white);
+      border-color: var(--ink);
+    }
+
+    /* Footer */
+    footer {
+      border-top: 1px solid var(--line);
+      padding: 32px 60px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .footer-copy {
+      font-size: 12px;
+      color: var(--ink-soft);
+      letter-spacing: 0.05em;
+    }
+    .footer-made {
+      font-size: 12px;
+      color: var(--line);
+      letter-spacing: 0.08em;
+    }
+
+    /* Scroll indicator */
+    .scroll-indicator {
+      position: absolute;
+      bottom: 40px; right: 60px;
+      display: flex; flex-direction: column; align-items: center; gap: 12px;
+      opacity: 0;
+      animation: fadeIn 1s ease 2s forwards;
+      z-index: 2;
+    }
+    .scroll-indicator span {
+      font-size: 10px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--ink-soft);
+      writing-mode: vertical-lr;
+    }
+    .scroll-line {
+      width: 1px; height: 50px;
+      background: linear-gradient(to bottom, var(--gold), transparent);
+      animation: scrollPulse 2s ease-in-out infinite;
+    }
+
+    /* Animations */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeDown {
+      from { opacity: 0; transform: translateY(-16px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    @keyframes marquee {
+      from { transform: translateX(0); }
+      to { transform: translateX(-50%); }
+    }
+    @keyframes scrollPulse {
+      0%, 100% { opacity: 0.4; }
+      50% { opacity: 1; }
+    }
+
+    /* Intersection observer reveals */
+    .reveal {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: opacity 0.9s ease, transform 0.9s ease;
+    }
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* Responsive */
+    @media (max-width: 900px) {
+      nav { padding: 24px 30px; }
+      .nav-links { display: none; }
+      .hero { grid-template-columns: 1fr; min-height: auto; }
+      .hero-left { padding: 140px 30px 60px; }
+      .hero-right { height: 300px; }
+      .hero-deco { display: none; }
+      .about { grid-template-columns: 1fr; padding: 80px 30px; gap: 20px; }
+      .about-stats { grid-template-columns: repeat(3, 1fr); gap: 20px; }
+      .contact { padding: 80px 30px; }
+      footer { padding: 24px 30px; flex-direction: column; gap: 8px; text-align: center; }
+      .scroll-indicator { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="cursor" id="cursor"></div>
+  <div class="cursor-ring" id="cursorRing"></div>
+
+  <!-- NAV -->
+  <nav>
+    <a href="#" class="nav-logo">Tu Nombre</a>
+    <ul class="nav-links">
+      <li><a href="#about">Sobre mí</a></li>
+      <li><a href="#contact">Contacto</a></li>
+    </ul>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-left">
+      <p class="hero-eyebrow">Portfolio Personal · 2025</p>
+      <h1 class="hero-name">Tu<br><em>Nombre</em><br>Aquí</h1>
+      <p class="hero-tagline">
+        Una línea que describe lo que hacés. Breve, honesta y memorable. Alguien que crea cosas que importan.
+      </p>
+      <div class="hero-cta">
+        <a href="#about" class="btn-primary">Sobre mí</a>
+        <a href="#contact" class="btn-text">Contactar</a>
+      </div>
+    </div>
+
+    <div class="hero-right">
+      <div class="hero-image-wrap">
+        <div class="hero-image-bg"></div>
+      </div>
+      <div class="hero-deco">
+        <div class="hero-deco-num">5+</div>
+        <div class="hero-deco-label">Años de experiencia</div>
+      </div>
+    </div>
+
+    <div class="scroll-indicator">
+      <span>Scroll</span>
+      <div class="scroll-line"></div>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- MARQUEE -->
+  <div class="marquee-section">
+    <div class="marquee-track">
+      <span class="marquee-item">Diseño <span>·</span></span>
+      <span class="marquee-item">Creatividad <span>·</span></span>
+      <span class="marquee-item">Pasión <span>·</span></span>
+      <span class="marquee-item">Detalle <span>·</span></span>
+      <span class="marquee-item">Visión <span>·</span></span>
+      <span class="marquee-item">Innovación <span>·</span></span>
+      <span class="marquee-item">Diseño <span>·</span></span>
+      <span class="marquee-item">Creatividad <span>·</span></span>
+      <span class="marquee-item">Pasión <span>·</span></span>
+      <span class="marquee-item">Detalle <span>·</span></span>
+      <span class="marquee-item">Visión <span>·</span></span>
+      <span class="marquee-item">Innovación <span>·</span></span>
+    </div>
+  </div>
+
+  <!-- ABOUT -->
+  <section class="about" id="about">
+    <div>
+      <p class="section-label reveal">Sobre mí</p>
+    </div>
+    <div class="about-content">
+      <h2 class="about-heading reveal">Una persona<br>con <em>propósito</em><br>y visión.</h2>
+      <div class="about-body reveal">
+        <p>
+          Hola, soy <strong>Tu Nombre</strong>. Trabajo en [lo que hacés], con un enfoque en crear experiencias que tengan sentido para las personas. Me mueve la curiosidad, la atención al detalle y la búsqueda constante de hacer las cosas bien.
+        </p>
+        <p>
+          A lo largo de mi camino he aprendido que lo más importante no es solo el resultado, sino el proceso. Cada proyecto es una oportunidad de crecer, de colaborar y de dejar algo mejor que como lo encontré.
+        </p>
+      </div>
+
+      <div class="about-stats reveal">
+        <div>
+          <div class="stat-num">5+</div>
+          <div class="stat-label">Años de exp.</div>
+        </div>
+        <div>
+          <div class="stat-num">30+</div>
+          <div class="stat-label">Proyectos</div>
+        </div>
+        <div>
+          <div class="stat-num">100%</div>
+          <div class="stat-label">Dedicación</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- CONTACT -->
+  <section class="contact" id="contact">
+    <p class="contact-eyebrow reveal">¿Hablamos?</p>
+    <h2 class="contact-heading reveal">Estoy <em>disponible</em><br>para nuevos proyectos</h2>
+    <div class="contact-links reveal">
+      <a href="mailto:tu@email.com" class="contact-link">Email</a>
+      <a href="#" class="contact-link">LinkedIn</a>
+      <a href="#" class="contact-link">Instagram</a>
+      <a href="#" class="contact-link">WhatsApp</a>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <span class="footer-copy">© 2025 Tu Nombre — Todos los derechos reservados</span>
+    <span class="footer-made">Hecho con cuidado</span>
+  </footer>
+
+  <script>
+    // Custom cursor
+    const cursor = document.getElementById('cursor');
+    const ring = document.getElementById('cursorRing');
+    let mx = 0, my = 0, rx = 0, ry = 0;
+    document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; });
+    function animCursor() {
+      cursor.style.left = mx + 'px'; cursor.style.top = my + 'px';
+      rx += (mx - rx) * 0.12; ry += (my - ry) * 0.12;
+      ring.style.left = rx + 'px'; ring.style.top = ry + 'px';
+      requestAnimationFrame(animCursor);
+    }
+    animCursor();
+
+    // Scale ring on hover links
+    document.querySelectorAll('a, button').forEach(el => {
+      el.addEventListener('mouseenter', () => { ring.style.transform = 'translate(-50%,-50%) scale(2)'; ring.style.opacity = '0.3'; });
+      el.addEventListener('mouseleave', () => { ring.style.transform = 'translate(-50%,-50%) scale(1)'; ring.style.opacity = '0.6'; });
+    });
+
+    // Reveal on scroll
+    const reveals = document.querySelectorAll('.reveal');
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); } });
+    }, { threshold: 0.15 });
+    reveals.forEach(el => observer.observe(el));
+  </script>
+
+</body>
+</html>
